@@ -1,0 +1,4 @@
+---
+# List packages to install; adjust if you need additional packages.
+tools_packages:
+  - docker

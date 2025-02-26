@@ -1,0 +1,16 @@
+---
+
+- name: Retrieve DB_HOST from SSM
+  ansible.builtin.set_fact:
+    db_host: "{{ lookup('amazon.aws.aws_ssm', ssm_parameters_db_parameters.host, decrypt=False, region=region) }}"
+    db_port: "{{ lookup('amazon.aws.aws_ssm', ssm_parameters_db_parameters.port, decrypt=False, region=region) }}"
+    db_name: "{{ lookup('amazon.aws.aws_ssm', ssm_parameters_db_parameters.name, decrypt=True, region=region) }}"
+    db_user: "{{ lookup('amazon.aws.aws_ssm', ssm_parameters_db_parameters.user, decrypt=True, region=region) }}"
+    db_pass: "{{ lookup('amazon.aws.aws_ssm', ssm_parameters_db_parameters.pass, decrypt=True, region=region) }}"
+    ecr_base_url: "{{ lookup('amazon.aws.aws_ssm', ssm_parameters_ecr_parameters.url,
+                  decrypt=False, region=region).split('/') | first }}"
+    ecr_repo: "{{ lookup('amazon.aws.aws_ssm', ssm_parameters_ecr_parameters.url,
+              decrypt=False, region=region).split('/') | last }}"
+    ecr_version: "{{ lookup('amazon.aws.aws_ssm', ssm_parameters_ecr_parameters.version,
+                  decrypt=False, region=region) }}"
+    app_port: "{{ lookup('amazon.aws.aws_ssm', ssm_parameters_app_parameters.app_port, decrypt=True, region=region) }}"

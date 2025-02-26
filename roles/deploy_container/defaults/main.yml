@@ -1,0 +1,3 @@
+deploy_container_container_name: "{{ app_name }}"
+deploy_container_container_port: "{{ app_port }}"
+deploy_container_host_port: "{{ app_port }}"

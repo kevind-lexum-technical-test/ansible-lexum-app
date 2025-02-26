@@ -1,0 +1,41 @@
+---
+- name: Authenticate Docker to ECR
+  ansible.builtin.shell: |
+    aws ecr get-login-password --region {{ region }} | docker login --username AWS --password-stdin {{ ecr_base_url }}
+  register: ecr_login
+  changed_when: "'Login Succeeded' in ecr_login.stdout"
+  failed_when: ecr_login.rc != 0
+
+- name: Pull Docker image from ECR
+  ansible.builtin.shell: docker pull "{{ ecr_base_url }}/{{ ecr_repo }}:{{ ecr_version }}"
+  register: docker_pull
+  ignore_errors: true
+
+- name: Debug Docker Pull Output
+  ansible.builtin.debug:
+    var: docker_pull.stdout
+
+- name: Run Docker container with DB configuration
+  ansible.builtin.shell: |
+    docker run -d \
+      --name "{{ deploy_container_container_name }}" \
+      --restart always \
+      -p "{{ deploy_container_host_port }}:{{ deploy_container_container_port }}" \
+      -e DB_HOST="{{ db_host }}" \
+      -e DB_PORT="{{ db_port }}" \
+      -e DB_NAME="{{ db_name }}" \
+      -e DB_USER="{{ db_user }}" \
+      -e DB_PASS="{{ db_pass }}" \
+      --log-driver=awslogs \
+      --log-opt awslogs-group="/{{ deploy_container_container_name }}/logs" \
+      --log-opt awslogs-region="{{ region }}" \
+      --log-opt awslogs-create-group=true \
+      --log-opt awslogs-stream="{{ deploy_container_container_name }}" \
+      "{{ ecr_base_url }}/{{ ecr_repo }}:{{ ecr_version }}"
+  register: docker_run
+  when: docker_pull.rc == 0  # Only run if the pull was successful
+  ignore_errors: true
+
+- name: Debug Docker Run Output
+  ansible.builtin.debug:
+    var: docker_run.stdout

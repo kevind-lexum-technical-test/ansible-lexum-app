@@ -1,0 +1,11 @@
+---
+- name: Install Docker
+  ansible.builtin.yum:
+    name: "{{ tools_packages }}"
+    state: present
+
+- name: Start and enable Docker service
+  ansible.builtin.systemd:
+    name: docker
+    state: started
+    enabled: true

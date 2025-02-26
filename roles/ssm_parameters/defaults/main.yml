@@ -1,0 +1,14 @@
+ssm_parameters_db_parameters:
+  host: "/lexum/db/host"
+  port: "/lexum/db/port"
+  name: "/lexum/db/name"
+  user: "/lexum/db/user"
+  pass: "/lexum/db/pass"
+
+ssm_parameters_ecr_parameters:
+  url: "/lexum/{{ app_name }}/ecr/url"
+  version: "/lexum/{{ app_name }}/ecr/version"
+
+ssm_parameters_app_parameters:
+  app_name: "/lexum/{{ app_name }}/name"
+  app_port: "/lexum/{{ app_name }}/port"
